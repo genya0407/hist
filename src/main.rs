@@ -54,7 +54,7 @@ fn present_histogram(histogram: Histgram, max_bar_length: f64) -> String {
 
     // Body
     for bar in histogram.bars {
-        let bar_length = ((bar.frequency as f64 / max_freq) * max_bar_length) as i64;
+        let bar_length = calculate_bar_length(bar.frequency as f64, max_freq, max_bar_length);
         lines.push(format!(
             "{representative:>fill$.prec$}|{bar_string}",
             representative = bar.representative,
@@ -66,9 +66,28 @@ fn present_histogram(histogram: Histgram, max_bar_length: f64) -> String {
         ));
     }
     // Footer
-    lines.push(format!("maximum_frequency: {}", max_freq));
+    lines.push(format!(
+        "{space:>fill$}+{minus:->fill_minus$}+ {max_freq} times",
+        space = " ",
+        fill = max_representative_string_length,
+        minus = "-",
+        fill_minus = calculate_bar_length(max_freq, max_freq, max_bar_length),
+        max_freq = max_freq as i64,
+    ));
+    lines.push(format!(
+        "{space:>fill$}+{minus:->fill_minus$}+ {max_freq} times",
+        space = " ",
+        fill = max_representative_string_length,
+        minus = "-",
+        fill_minus = calculate_bar_length(max_freq, max_freq, max_bar_length) / 2,
+        max_freq = (max_freq / 2.0) as i64,
+    ));
 
     lines.join("\n")
+}
+
+fn calculate_bar_length(frequency: f64, max_freq: f64, max_bar_length: f64) -> usize {
+    ((frequency as f64 / max_freq) * max_bar_length) as usize
 }
 
 const DEFAULT_OUTPUT_LINES: i64 = 30;
