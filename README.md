@@ -1,6 +1,6 @@
 # hist
 
-CLI tool that reads numbers from stdin, and generates histogram.
+CLI tool that reads numbers from stdin, and writes histogram to stdout.
 
 Caution:
 
