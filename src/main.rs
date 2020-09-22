@@ -38,17 +38,36 @@ fn present_histogram(histogram: Histgram, max_bar_length: f64) -> String {
         .frequency as f64;
 
     let mut lines: Vec<String> = vec![];
+    let max_representative_string_length = histogram
+        .bars
+        .iter()
+        .map(|bar| {
+            format!(
+                "{representative:.prec$}",
+                representative = bar.representative,
+                prec = prec
+            )
+            .len()
+        })
+        .max()
+        .unwrap(); // hisotram.bars is not empty here
+
+    // Body
     for bar in histogram.bars {
         let bar_length = ((bar.frequency as f64 / max_freq) * max_bar_length) as i64;
         lines.push(format!(
-            "{representative:.prec$}|{bar_string}",
+            "{representative:>fill$.prec$}|{bar_string}",
             representative = bar.representative,
+            fill = max_representative_string_length,
             prec = prec,
             bar_string = std::iter::repeat("*")
                 .take(bar_length as usize)
                 .collect::<String>()
         ));
     }
+    // Footer
+    lines.push(format!("maximum_frequency: {}", max_freq));
+
     lines.join("\n")
 }
 
