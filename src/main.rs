@@ -13,7 +13,7 @@ fn main(
             .expect("failed to read from stdin");
         s
     };
-    let histogram = Histgram::build(input, bin)?;
+    let histogram = Histgram::build(input, bin);
     let output = present_histogram(histogram, bar_length as f64);
     println!("{}", output);
     Ok(())
@@ -93,21 +93,29 @@ fn calculate_bar_length(frequency: f64, max_freq: f64, max_bar_length: f64) -> u
 const DEFAULT_OUTPUT_LINES: i64 = 30;
 
 impl Histgram {
-    pub fn build(input: String, bin: Option<f64>) -> Result<Self, ()> {
+    pub fn build(input: String, bin: Option<f64>) -> Self {
         let mut parsed: Vec<f64> = vec![];
         for line in input.lines() {
-            let value: f64 = line.parse().map_err(|_| ())?;
+            let value: f64 = match line.trim().parse() {
+                Ok(v) => v,
+                Err(e) => {
+                    eprintln!("Parsing `{}` failed: {}", line, e);
+                    continue;
+                }
+            };
+
             if value.is_nan() {
-                return Err(()); // FIXME
+                eprintln!("Nan detected: {}", line);
+                continue;
             }
             parsed.push(value);
         }
 
         if parsed.is_empty() {
-            return Ok(Self {
+            return Self {
                 bin: f64::NAN,
                 bars: vec![],
-            });
+            };
         }
 
         // f64 does not implement Ord
@@ -150,10 +158,10 @@ impl Histgram {
         }
         bars.push(current_bar);
 
-        Ok(Self {
+        Self {
             bin: bin,
             bars: bars,
-        })
+        }
     }
 }
 
