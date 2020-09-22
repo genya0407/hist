@@ -2,7 +2,10 @@
 
 CLI tool that reads numbers from stdin, and generates histogram.
 
-Caution: this tool is experimental, and may have bugs.
+Caution:
+
+- This tool is experimental, and may have bugs.
+  - Specifically, it does not draw correct histogram when number of input lines is small.
 
 ## Examples
 
